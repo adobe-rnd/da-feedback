@@ -79,13 +79,66 @@ export function formatSlackMessage({ category, message, context, sessionId }) {
   return text;
 }
 
+function jsonResponse(body, status, extraHeaders = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...extraHeaders },
+  });
+}
+
 export async function postToSlack(text, env) {
-  // TODO: Task 5
+  const webhookUrl = env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) throw new Error('SLACK_WEBHOOK_URL is not configured');
+
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Slack webhook returned ${response.status}`);
+  }
 }
 
 export default {
   async fetch(request, env) {
-    // TODO: Task 5
-    return new Response('not implemented', { status: 501 });
+    const url = new URL(request.url);
+
+    // CORS preflight
+    if (request.method === 'OPTIONS') {
+      const corsHeaders = checkCors(request, env);
+      if (!corsHeaders) return jsonResponse({ error: 'Origin not allowed' }, 403);
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
+    // Origin check for all other requests
+    const corsHeaders = checkCors(request, env);
+    if (!corsHeaders) return jsonResponse({ error: 'Origin not allowed' }, 403);
+
+    // Route: only POST /feedback is valid
+    if (request.method !== 'POST' || url.pathname !== '/feedback') {
+      return jsonResponse({ error: 'Not found' }, 404, corsHeaders);
+    }
+
+    // Parse and validate body
+    let payload;
+    try {
+      const body = await request.json();
+      payload = parseAndValidate(body);
+    } catch (e) {
+      return jsonResponse({ error: e.message }, 400, corsHeaders);
+    }
+
+    // Format and deliver to Slack
+    try {
+      const text = formatSlackMessage(payload);
+      await postToSlack(text, env);
+    } catch (e) {
+      console.error('Slack delivery failed:', e.message);
+      return jsonResponse({ error: 'Slack delivery failed' }, 502, corsHeaders);
+    }
+
+    return jsonResponse({ ok: true }, 200, corsHeaders);
   },
 };
