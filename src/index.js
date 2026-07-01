@@ -17,7 +17,37 @@ export function checkCors(request, env) {
 }
 
 export function parseAndValidate(body) {
-  // TODO: Task 2
+  const { category, message, context, sessionId } = body || {};
+
+  if (!VALID_CATEGORIES.includes(category)) {
+    throw new Error(`Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`);
+  }
+
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    throw new Error('message is required and must be a non-empty string');
+  }
+  if (message.length > 2000) {
+    throw new Error('message must be 2000 characters or fewer');
+  }
+
+  if (!context || typeof context !== 'object' || Array.isArray(context)) {
+    throw new Error('context is required and must be an object');
+  }
+  if (!context.org || typeof context.org !== 'string') {
+    throw new Error('context.org is required and must be a non-empty string');
+  }
+  if (!context.site || typeof context.site !== 'string') {
+    throw new Error('context.site is required and must be a non-empty string');
+  }
+  if (!context.path || typeof context.path !== 'string') {
+    throw new Error('context.path is required and must be a non-empty string');
+  }
+
+  if (sessionId !== undefined && typeof sessionId !== 'string') {
+    throw new Error('sessionId must be a string if provided');
+  }
+
+  return { category, message, context, sessionId };
 }
 
 export function formatSlackMessage(payload) {
