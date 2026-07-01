@@ -13,7 +13,19 @@
 const VALID_CATEGORIES = ['general', 'feature-request', 'bug', 'question', 'other'];
 
 export function checkCors(request, env) {
-  // TODO: Task 3
+  const origin = request.headers.get('Origin') || '';
+  const allowed = (env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  if (!origin || !allowed.includes(origin)) return null;
+
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
 }
 
 export function parseAndValidate(body) {
