@@ -1,0 +1,20 @@
+name = "da-feedback"
+main = "src/index.js"
+compatibility_date = "2024-11-11"
+keep_vars = true
+
+[vars]
+ALLOWED_ORIGINS = "http://localhost:3000"
+ENVIRONMENT = "dev"
+
+# SLACK_WEBHOOK_URL is a secret — never put it in vars.
+# Set it with:   wrangler secret put SLACK_WEBHOOK_URL
+
+# ----------------------------------------------------------------------
+# production environment
+[env.production]
+name = "da-feedback"
+
+[env.production.vars]
+ALLOWED_ORIGINS = "https://da.live,https://adobe.com"
+ENVIRONMENT = "production"
