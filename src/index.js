@@ -17,7 +17,11 @@ export function checkCors(request, env) {
   const allowed = (env.ALLOWED_ORIGINS || '')
     .split(',')
     .map((o) => o.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((o) => {
+      if (o.startsWith('http://') || o.startsWith('https://')) return o;
+      return o.startsWith('localhost') ? `http://${o}` : `https://${o}`;
+    });
 
   if (!origin || !allowed.includes(origin)) return null;
 

@@ -35,11 +35,13 @@ Edit `wrangler.toml`. The `ALLOWED_ORIGINS` var is a comma-separated list of exa
 
 ```toml
 [vars]
-ALLOWED_ORIGINS = "http://localhost:3000"
+ALLOWED_ORIGINS = "localhost:3000"
 
 [env.production.vars]
-ALLOWED_ORIGINS = "https://da.live,https://adobe.com"
+ALLOWED_ORIGINS = "da.live,adobe.com"
 ```
+
+The code automatically prepends `https://` to bare hostnames, and `http://` for `localhost` entries. If you need a full origin (e.g. a non-standard port on a remote host), you can still include the protocol explicitly — it will be used as-is.
 
 ## Development
 
