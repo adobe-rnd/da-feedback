@@ -29,7 +29,7 @@ export function checkCors(request, env) {
 }
 
 export function parseAndValidate(body) {
-  const { category, message, context, sessionId } = body || {};
+  const { category, message, context, user, sessionId } = body || {};
 
   if (!VALID_CATEGORIES.includes(category)) {
     throw new Error(`Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`);
@@ -55,11 +55,21 @@ export function parseAndValidate(body) {
     throw new Error('context.path is required and must be a non-empty string');
   }
 
+  if (!user || typeof user !== 'object' || Array.isArray(user)) {
+    throw new Error('user is required and must be an object');
+  }
+  if (!user.email || typeof user.email !== 'string') {
+    throw new Error('user.email is required and must be a non-empty string');
+  }
+  if (!user.imsId || typeof user.imsId !== 'string') {
+    throw new Error('user.imsId is required and must be a non-empty string');
+  }
+
   if (sessionId !== undefined && typeof sessionId !== 'string') {
     throw new Error('sessionId must be a string if provided');
   }
 
-  return { category, message, context, sessionId };
+  return { category, message, context, user, sessionId };
 }
 
 export function formatSlackMessage({ category, message, context, sessionId }) {

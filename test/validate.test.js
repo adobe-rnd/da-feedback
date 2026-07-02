@@ -5,6 +5,7 @@ const validBody = {
   category: 'bug',
   message: 'Something broke',
   context: { org: 'myorg', site: 'mysite', path: '/my/page' },
+  user: { email: 'user@adobe.com', imsId: 'abc123' },
 };
 
 describe('parseAndValidate', () => {
@@ -77,5 +78,40 @@ describe('parseAndValidate', () => {
     for (const cat of ['general', 'feature-request', 'bug', 'question', 'other']) {
       expect(() => parseAndValidate({ ...validBody, category: cat })).not.toThrow();
     }
+  });
+
+  it('includes user in the returned payload', () => {
+    const result = parseAndValidate(validBody);
+    expect(result.user).toEqual({ email: 'user@adobe.com', imsId: 'abc123' });
+  });
+
+  it('throws when user is missing', () => {
+    const { user, ...rest } = validBody;
+    expect(() => parseAndValidate(rest)).toThrow('user');
+  });
+
+  it('throws when user is not an object', () => {
+    expect(() => parseAndValidate({ ...validBody, user: 'me@adobe.com' }))
+      .toThrow('user');
+  });
+
+  it('throws when user.email is missing', () => {
+    expect(() => parseAndValidate({ ...validBody, user: { imsId: 'abc123' } }))
+      .toThrow('user.email');
+  });
+
+  it('throws when user.email is empty', () => {
+    expect(() => parseAndValidate({ ...validBody, user: { email: '', imsId: 'abc123' } }))
+      .toThrow('user.email');
+  });
+
+  it('throws when user.imsId is missing', () => {
+    expect(() => parseAndValidate({ ...validBody, user: { email: 'user@adobe.com' } }))
+      .toThrow('user.imsId');
+  });
+
+  it('throws when user.imsId is empty', () => {
+    expect(() => parseAndValidate({ ...validBody, user: { email: 'user@adobe.com', imsId: '' } }))
+      .toThrow('user.imsId');
   });
 });

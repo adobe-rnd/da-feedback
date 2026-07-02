@@ -13,6 +13,7 @@ const validBody = {
   category: 'bug',
   message: 'Something is broken',
   context: { org: 'myorg', site: 'mysite', path: '/page' },
+  user: { email: 'user@adobe.com', imsId: 'abc123' },
 };
 
 function makeRequest(method, pathname, body, origin = ALLOWED_ORIGIN) {
