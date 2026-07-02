@@ -76,6 +76,20 @@ export function parseAndValidate(body) {
   return { category, message, context, user, sessionId };
 }
 
+function escapeSlackMrkdwn(text) {
+  return text.replace(/[&<>`|\n]/g, (ch) => {
+    switch (ch) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '`': return '\u02bc'; // visually similar, avoids breaking inline code spans
+      case '|': return '\u2503'; // avoids breaking Slack link syntax (<url|text>)
+      case '\n': return ' ';    // avoids breaking inline constructs
+      default: return ch;
+    }
+  });
+}
+
 export function formatSlackMessage({ category, message, context, user, sessionId }) {
   const { org, site, path } = context;
   const daUrl = `https://da.live/#/${org}/${site}${path}`;
@@ -83,7 +97,7 @@ export function formatSlackMessage({ category, message, context, user, sessionId
 
   let text = `:speech_balloon: *New DA/EW Feedback*\n\n`;
   text += `*Category:* ${category}\n`;
-  text += `*Message:* ${message}\n\n`;
+  text += `*Message:* ${escapeSlackMrkdwn(message)}\n\n`;
   text += `*Open in:* <${daUrl}|DA Live> · <${previewUrl}|Preview>\n\n`;
   text += `*User:* ${user.email} (IMS: ${user.imsId})`;
 

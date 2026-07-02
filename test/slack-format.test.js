@@ -65,6 +65,31 @@ describe('formatSlackMessage', () => {
     expect(text).toContain('*User:* user@adobe.com (IMS: abc123xyz)');
   });
 
+  it('escapes & in message', () => {
+    const text = formatSlackMessage({ ...basePayload, message: 'A & B' });
+    expect(text).toContain('*Message:* A &amp; B');
+  });
+
+  it('escapes < and > in message', () => {
+    const text = formatSlackMessage({ ...basePayload, message: '<script>' });
+    expect(text).toContain('*Message:* &lt;script&gt;');
+  });
+
+  it('escapes pipe in message to avoid breaking Slack link syntax', () => {
+    const text = formatSlackMessage({ ...basePayload, message: 'a|b' });
+    expect(text).toContain('*Message:* a\u2503b');
+  });
+
+  it('replaces newlines in message with spaces', () => {
+    const text = formatSlackMessage({ ...basePayload, message: 'line1\nline2' });
+    expect(text).toContain('*Message:* line1 line2');
+  });
+
+  it('does not escape message-adjacent fields (email, imsId, sessionId)', () => {
+    const text = formatSlackMessage({ ...basePayload, sessionId: 'sess&1' });
+    expect(text).toContain('*Session ID:* sess&1');
+  });
+
   it('places user line after Open in and before Session ID', () => {
     const text = formatSlackMessage({ ...basePayload, sessionId: 'sess-1' });
     const openInPos = text.indexOf('*Open in:*');
