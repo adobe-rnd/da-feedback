@@ -5,6 +5,7 @@ const basePayload = {
   category: 'bug',
   message: 'The publish button is broken.',
   context: { org: 'myorg', site: 'mysite', path: '/content/page' },
+  user: { email: 'user@adobe.com', imsId: 'abc123xyz' },
   sessionId: undefined,
 };
 
@@ -57,5 +58,26 @@ describe('formatSlackMessage', () => {
     });
     // Should not double-slash: da.live/#/acme/main/index not da.live/#/acme/main//index
     expect(text).toContain('https://da.live/#/acme/main/index');
+  });
+
+  it('includes the user email line', () => {
+    const text = formatSlackMessage(basePayload);
+    expect(text).toContain('*User:* user@adobe.com');
+  });
+
+  it('includes the IMS ID line', () => {
+    const text = formatSlackMessage(basePayload);
+    expect(text).toContain('*IMS ID:* abc123xyz');
+  });
+
+  it('places user lines after Open in and before Session ID', () => {
+    const text = formatSlackMessage({ ...basePayload, sessionId: 'sess-1' });
+    const openInPos = text.indexOf('*Open in:*');
+    const userPos = text.indexOf('*User:*');
+    const imsPos = text.indexOf('*IMS ID:*');
+    const sessionPos = text.indexOf('*Session ID:*');
+    expect(openInPos).toBeLessThan(userPos);
+    expect(userPos).toBeLessThan(imsPos);
+    expect(imsPos).toBeLessThan(sessionPos);
   });
 });

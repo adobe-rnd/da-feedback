@@ -72,7 +72,7 @@ export function parseAndValidate(body) {
   return { category, message, context, user, sessionId };
 }
 
-export function formatSlackMessage({ category, message, context, sessionId }) {
+export function formatSlackMessage({ category, message, context, user, sessionId }) {
   const { org, site, path } = context;
   const daUrl = `https://da.live/#/${org}/${site}${path}`;
   const previewUrl = `https://main--${site}--${org}.aem.page${path}`;
@@ -80,7 +80,9 @@ export function formatSlackMessage({ category, message, context, sessionId }) {
   let text = `:speech_balloon: *New DA/EW Feedback*\n\n`;
   text += `*Category:* ${category}\n`;
   text += `*Message:* ${message}\n\n`;
-  text += `*Open in:* <${daUrl}|DA Live> · <${previewUrl}|Preview>`;
+  text += `*Open in:* <${daUrl}|DA Live> · <${previewUrl}|Preview>\n\n`;
+  text += `*User:* ${user.email}\n`;
+  text += `*IMS ID:* ${user.imsId}`;
 
   if (sessionId) {
     text += `\n\n*Session ID:* ${sessionId}`;
