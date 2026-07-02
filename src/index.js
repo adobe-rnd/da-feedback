@@ -85,8 +85,7 @@ export function formatSlackMessage({ category, message, context, user, sessionId
   text += `*Category:* ${category}\n`;
   text += `*Message:* ${message}\n\n`;
   text += `*Open in:* <${daUrl}|DA Live> · <${previewUrl}|Preview>\n\n`;
-  text += `*User:* ${user.email}\n`;
-  text += `*IMS ID:* ${user.imsId}`;
+  text += `*User:* ${user.email} (IMS: ${user.imsId})`;
 
   if (sessionId) {
     text += `\n\n*Session ID:* ${sessionId}`;

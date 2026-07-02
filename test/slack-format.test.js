@@ -60,24 +60,17 @@ describe('formatSlackMessage', () => {
     expect(text).toContain('https://da.live/#/acme/main/index');
   });
 
-  it('includes the user email line', () => {
+  it('includes the user line with email and IMS ID combined', () => {
     const text = formatSlackMessage(basePayload);
-    expect(text).toContain('*User:* user@adobe.com');
+    expect(text).toContain('*User:* user@adobe.com (IMS: abc123xyz)');
   });
 
-  it('includes the IMS ID line', () => {
-    const text = formatSlackMessage(basePayload);
-    expect(text).toContain('*IMS ID:* abc123xyz');
-  });
-
-  it('places user lines after Open in and before Session ID', () => {
+  it('places user line after Open in and before Session ID', () => {
     const text = formatSlackMessage({ ...basePayload, sessionId: 'sess-1' });
     const openInPos = text.indexOf('*Open in:*');
     const userPos = text.indexOf('*User:*');
-    const imsPos = text.indexOf('*IMS ID:*');
     const sessionPos = text.indexOf('*Session ID:*');
     expect(openInPos).toBeLessThan(userPos);
-    expect(userPos).toBeLessThan(imsPos);
-    expect(imsPos).toBeLessThan(sessionPos);
+    expect(userPos).toBeLessThan(sessionPos);
   });
 });
