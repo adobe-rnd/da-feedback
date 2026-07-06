@@ -43,7 +43,7 @@ describe('formatSlackMessage', () => {
 
   it('includes the Session ID line when sessionId is present', () => {
     const text = formatSlackMessage({ ...basePayload, sessionId: 'abc-123-def' });
-    expect(text).toContain('*Session ID:* abc-123-def');
+    expect(text).toContain('*Assistant Session ID:* abc-123-def');
   });
 
   it('includes the header emoji and title', () => {
@@ -87,14 +87,14 @@ describe('formatSlackMessage', () => {
 
   it('does not escape message-adjacent fields (email, imsId, sessionId)', () => {
     const text = formatSlackMessage({ ...basePayload, sessionId: 'sess&1' });
-    expect(text).toContain('*Session ID:* sess&1');
+    expect(text).toContain('*Assistant Session ID:* sess&1');
   });
 
   it('places user line after Open in and before Session ID when context is present', () => {
     const text = formatSlackMessage({ ...basePayload, sessionId: 'sess-1' });
     const openInPos = text.indexOf('*Open in:*');
     const userPos = text.indexOf('*User:*');
-    const sessionPos = text.indexOf('*Session ID:*');
+    const sessionPos = text.indexOf('*Assistant Session ID:*');
     expect(openInPos).toBeLessThan(userPos);
     expect(userPos).toBeLessThan(sessionPos);
   });

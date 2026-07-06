@@ -96,7 +96,7 @@ export function formatSlackMessage({ category, message, context, user, sessionId
   text += `*User:* ${user.email} (IMS: ${user.imsId})`;
 
   if (sessionId) {
-    text += `\n\n*Session ID:* ${sessionId}`;
+    text += `\n\n*Assistant Session ID:* ${sessionId}`;
   }
 
   return text;
