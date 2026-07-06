@@ -2,3 +2,5 @@ node_modules/
 .wrangler/
 dist/
 .dev.vars
+docs/superpowers/
+.superpowers/sdd/
