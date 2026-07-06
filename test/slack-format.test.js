@@ -90,12 +90,24 @@ describe('formatSlackMessage', () => {
     expect(text).toContain('*Session ID:* sess&1');
   });
 
-  it('places user line after Open in and before Session ID', () => {
+  it('places user line after Open in and before Session ID when context is present', () => {
     const text = formatSlackMessage({ ...basePayload, sessionId: 'sess-1' });
     const openInPos = text.indexOf('*Open in:*');
     const userPos = text.indexOf('*User:*');
     const sessionPos = text.indexOf('*Session ID:*');
     expect(openInPos).toBeLessThan(userPos);
     expect(userPos).toBeLessThan(sessionPos);
+  });
+
+  it('omits Open in links when context is absent', () => {
+    const { context, ...rest } = basePayload;
+    const text = formatSlackMessage(rest);
+    expect(text).not.toContain('*Open in:*');
+    expect(text).toContain('*User:*');
+  });
+
+  it('omits Open in links when context fields are incomplete', () => {
+    const text = formatSlackMessage({ ...basePayload, context: { org: 'myorg' } });
+    expect(text).not.toContain('*Open in:*');
   });
 });

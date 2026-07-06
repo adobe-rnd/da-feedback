@@ -45,17 +45,8 @@ export function parseAndValidate(body) {
     throw new Error('message must be 2000 characters or fewer');
   }
 
-  if (!context || typeof context !== 'object' || Array.isArray(context)) {
-    throw new Error('context is required and must be an object');
-  }
-  if (!context.org || typeof context.org !== 'string') {
-    throw new Error('context.org is required and must be a non-empty string');
-  }
-  if (!context.site || typeof context.site !== 'string') {
-    throw new Error('context.site is required and must be a non-empty string');
-  }
-  if (!context.path || typeof context.path !== 'string') {
-    throw new Error('context.path is required and must be a non-empty string');
+  if (context !== undefined && (typeof context !== 'object' || Array.isArray(context))) {
+    throw new Error('context must be an object if provided');
   }
 
   if (!user || typeof user !== 'object' || Array.isArray(user)) {
@@ -90,14 +81,18 @@ function escapeSlackMrkdwn(text) {
 }
 
 export function formatSlackMessage({ category, message, context, user, sessionId }) {
-  const { org, site, path } = context;
-  const daUrl = `https://da.live/#/${org}/${site}${path}`;
-  const previewUrl = `https://main--${site}--${org}.aem.page${path}`;
+  const { org, site, path } = context || {};
 
   let text = `:speech_balloon: *New DA/EW Feedback*\n\n`;
   text += `*Category:* ${category}\n`;
   text += `*Message:* ${escapeSlackMrkdwn(message)}\n\n`;
-  text += `*Open in:* <${daUrl}|DA Live> · <${previewUrl}|Preview>\n\n`;
+
+  if (org && site && path) {
+    const daUrl = `https://da.live/#/${org}/${site}${path}`;
+    const previewUrl = `https://main--${site}--${org}.aem.page${path}`;
+    text += `*Open in:* <${daUrl}|DA Live> · <${previewUrl}|Preview>\n\n`;
+  }
+
   text += `*User:* ${user.email} (IMS: ${user.imsId})`;
 
   if (sessionId) {

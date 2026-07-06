@@ -94,11 +94,8 @@ describe('fetch handler', () => {
       expect(res.status).toBe(400);
     });
 
-    it('returns 400 when context.org is missing', async () => {
-      const req = makeRequest('POST', '/feedback', {
-        ...validBody,
-        context: { site: 'mysite', path: '/p' },
-      });
+    it('returns 400 when context is not an object', async () => {
+      const req = makeRequest('POST', '/feedback', { ...validBody, context: 'bad' });
       const res = await worker.fetch(req, baseEnv);
       expect(res.status).toBe(400);
     });

@@ -49,24 +49,18 @@ describe('parseAndValidate', () => {
     expect(result.message).toHaveLength(2000);
   });
 
-  it('throws when context is missing', () => {
-    expect(() => parseAndValidate({ ...validBody, context: undefined }))
+  it('accepts when context is missing entirely', () => {
+    const { context, ...rest } = validBody;
+    expect(() => parseAndValidate(rest)).not.toThrow();
+  });
+
+  it('accepts when context fields are partially present', () => {
+    expect(() => parseAndValidate({ ...validBody, context: { org: 'myorg' } })).not.toThrow();
+  });
+
+  it('throws when context is not an object', () => {
+    expect(() => parseAndValidate({ ...validBody, context: 'bad' }))
       .toThrow('context');
-  });
-
-  it('throws when context.org is missing', () => {
-    expect(() => parseAndValidate({ ...validBody, context: { site: 'mysite', path: '/p' } }))
-      .toThrow('context.org');
-  });
-
-  it('throws when context.site is missing', () => {
-    expect(() => parseAndValidate({ ...validBody, context: { org: 'myorg', path: '/p' } }))
-      .toThrow('context.site');
-  });
-
-  it('throws when context.path is missing', () => {
-    expect(() => parseAndValidate({ ...validBody, context: { org: 'myorg', site: 'mysite' } }))
-      .toThrow('context.path');
   });
 
   it('throws when sessionId is present but not a string', () => {
