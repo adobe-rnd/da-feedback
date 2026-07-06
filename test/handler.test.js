@@ -79,8 +79,8 @@ describe('fetch handler', () => {
   });
 
   describe('validation errors', () => {
-    it('returns 400 when category is invalid', async () => {
-      const req = makeRequest('POST', '/feedback', { ...validBody, category: 'spam' });
+    it('returns 400 when category is empty', async () => {
+      const req = makeRequest('POST', '/feedback', { ...validBody, category: '' });
       const res = await worker.fetch(req, baseEnv);
       expect(res.status).toBe(400);
       const json = await res.json();

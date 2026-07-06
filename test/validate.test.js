@@ -21,12 +21,12 @@ describe('parseAndValidate', () => {
 
   it('throws on missing category', () => {
     expect(() => parseAndValidate({ ...validBody, category: undefined }))
-      .toThrow('Invalid category');
+      .toThrow('category');
   });
 
-  it('throws on invalid category value', () => {
-    expect(() => parseAndValidate({ ...validBody, category: 'spam' }))
-      .toThrow('Invalid category');
+  it('throws on empty category', () => {
+    expect(() => parseAndValidate({ ...validBody, category: '' }))
+      .toThrow('category');
   });
 
   it('throws on missing message', () => {
@@ -74,8 +74,8 @@ describe('parseAndValidate', () => {
       .toThrow('sessionId');
   });
 
-  it('accepts all valid category values', () => {
-    for (const cat of ['general', 'feature-request', 'bug', 'question', 'other']) {
+  it('accepts any non-empty string as category', () => {
+    for (const cat of ['general', 'feature-request', 'bug', 'custom-type', 'anything']) {
       expect(() => parseAndValidate({ ...validBody, category: cat })).not.toThrow();
     }
   });

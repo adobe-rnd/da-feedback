@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-const VALID_CATEGORIES = ['general', 'feature-request', 'bug', 'question', 'other'];
 
 export function checkCors(request, env) {
   const origin = request.headers.get('Origin') || '';
@@ -35,8 +34,8 @@ export function checkCors(request, env) {
 export function parseAndValidate(body) {
   const { category, message, context, user, sessionId } = body || {};
 
-  if (!VALID_CATEGORIES.includes(category)) {
-    throw new Error(`Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`);
+  if (!category || typeof category !== 'string' || category.trim().length === 0) {
+    throw new Error('category is required and must be a non-empty string');
   }
 
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
